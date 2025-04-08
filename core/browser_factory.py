@@ -6,6 +6,7 @@ from selenium.webdriver.firefox.options import Options as FirefoxOptions
 from webdriver_manager.chrome import ChromeDriverManager
 from webdriver_manager.firefox import GeckoDriverManager
 import os
+import platform
 
 class BrowserFactory:
     """WebDriver yöneten sınıf."""
@@ -29,8 +30,13 @@ class BrowserFactory:
             prefs = {"profile.default_content_setting_values.notifications": 2}
             chrome_options.add_experimental_option("prefs", prefs)
 
-            # WebDriver Başlat
-            driver = webdriver.Chrome(service=ChromeService(ChromeDriverManager().install()), options=chrome_options)
+            # Mac ARM64 için özel ayarlar
+            if platform.system() == "Darwin" and platform.machine() == "arm64":
+                chrome_options.binary_location = "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"
+                chrome_options.add_argument("--no-sandbox")
+
+            # ChromeDriver'ı başlat
+            driver = webdriver.Chrome(options=chrome_options)
         
         elif browser_name == "firefox":
             firefox_options = FirefoxOptions()
