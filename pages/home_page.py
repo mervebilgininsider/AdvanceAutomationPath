@@ -2,90 +2,85 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.action_chains import ActionChains
+import logging
+
+logger = logging.getLogger(__name__)
 
 class HomePage:
-    """Insider ana sayfası için Page Object Model."""
+    """Page Object Model for Insider Home Page"""
 
     def __init__(self, driver):
         self.driver = driver
         self.wait = WebDriverWait(driver, 2)
         self.actions = ActionChains(driver)
 
-        # Existing selectors
         self.cookie_accept_button = (By.ID, "wt-cli-accept-all-btn")
         self.push_notification_close = (By.CLASS_NAME, "close")
         self.company_menu = (By.XPATH, "//li[contains(@class, 'nav-item dropdown')][6]")
         self.careers_link = (By.XPATH, "//a[@href='https://useinsider.com/careers/']")
-        
-        # Update Agent One popup selectors
         self.agent_one_popup = (By.CSS_SELECTOR, "div.ins-notification-content")
-        self.agent_one_close = (By.CSS_SELECTOR, "span.ins-close-button")  # Updated selector
+        self.agent_one_close = (By.CSS_SELECTOR, "span.ins-close-button")
 
     def handle_agent_one_popup(self):
-        """Agent One popup'ını kontrol eder ve kapatır."""
+        """Handles and closes the Agent One popup if present"""
         try:
             short_wait = WebDriverWait(self.driver, 2)
             popup = short_wait.until(EC.presence_of_element_located(self.agent_one_popup))
             if popup.is_displayed():
-                print("TEST ADIMI: Agent One popup'ı tespit edildi, kapatılıyor...")
+                logger.info("Step 1.1: Closing Agent One popup")
                 close_button = self.driver.find_element(*self.agent_one_close)
-                self.driver.execute_script("arguments[0].click();", close_button)  # JavaScript ile tıklama
-                # Animasyon tamamlanana kadar bekle
+                self.driver.execute_script("arguments[0].click();", close_button)
                 short_wait.until(EC.invisibility_of_element_located(self.agent_one_popup))
-                print("✓ Agent One popup'ı başarıyla kapatıldı")
+                logger.info("Agent One popup closed successfully")
         except:
             pass
 
     def open_homepage(self):
-        """Ana sayfayı açar ve yüklenmesini bekler."""
-        print("TEST ADIMI: Ana sayfa açılıyor...")
+        """Opens the home page and waits for it to load"""
+        logger.info("Step 1: Opening home page")
         self.driver.get("https://useinsider.com/")
         self.wait.until(EC.presence_of_element_located((By.TAG_NAME, "body")))
-        # Sayfanın yüklendiğini doğrula
-        assert "Insider" in self.driver.title, "Ana sayfa yüklenemedi!"
-        print("✓ Ana sayfa başarıyla yüklendi")
+        assert "Insider" in self.driver.title, "Home page failed to load!"
+        logger.info("Home page loaded successfully")
 
     def accept_cookies(self):
-        """Çerezleri kabul eder."""
-        print("TEST ADIMI: Çerez bildirimi kabul ediliyor...")
+        """Accepts the cookie notification"""
+        logger.info("Step 2: Accepting cookie notification")
         try:
             accept_button = self.wait.until(EC.element_to_be_clickable(self.cookie_accept_button))
             accept_button.click()
             self.wait.until(EC.invisibility_of_element_located(self.cookie_accept_button))
-            print("✓ Çerez bildirimi başarıyla kabul edildi")
+            logger.info("Cookie notification accepted successfully")
         except Exception:
-            print("ℹ️ Çerez bildirimi görünmüyor veya zaten kabul edilmiş")
+            logger.info("Cookie notification not visible or already accepted")
 
     def close_push_notification(self):
-        """Eğer push bildirimi çıkarsa, kapatır."""
+        """Closes the push notification if present"""
         try:
             push_close_button = self.wait.until(EC.element_to_be_clickable(self.push_notification_close))
             push_close_button.click()
-            print("✓ Push bildirimi başarıyla kapatıldı")
+            logger.info("Push notification closed successfully")
         except Exception:
-            # Bu bir hata değil, bildirim olmayabilir
             pass
 
     def navigate_to_careers(self):
-        """Navbar'daki 'Company' menüsüne hover yapar ve 'Careers' seçeneğini tıklar."""
-        print("TEST ADIMI: Careers sayfasına yönlendiriliyor...")
+        """Hovers over the 'Company' menu and clicks the 'Careers' option"""
+        logger.info("Step 3: Navigating to Careers page")
         self.close_push_notification()
-        self.handle_agent_one_popup()  # Initial popup check
+        self.handle_agent_one_popup()
 
-        # "Company" menüsüne hover yap
         company_menu = self.wait.until(EC.presence_of_element_located(self.company_menu))
         self.actions.move_to_element(company_menu).perform()
-        print("✓ Company menüsüne hover yapıldı")
+        logger.info("Hovered over Company menu")
         
-        self.handle_agent_one_popup()  # Check after hover
+        self.handle_agent_one_popup()
 
-        # Rest of the navigation remains the same
         self.wait.until(EC.visibility_of_element_located(self.careers_link))
-        assert self.driver.find_element(*self.careers_link).is_displayed(), "Careers linki görünür değil!"
+        assert self.driver.find_element(*self.careers_link).is_displayed(), "Careers link is not visible!"
 
         careers_link = self.wait.until(EC.element_to_be_clickable(self.careers_link))
         careers_link.click()
-        print("✓ Careers linkine tıklandı")
+        logger.info("Clicked Careers link")
 
         self.driver.switch_to.window(self.driver.window_handles[-1])
-        print("✓ Careers sayfasına başarıyla yönlendirildi")
+        logger.info("Successfully navigated to Careers page")
