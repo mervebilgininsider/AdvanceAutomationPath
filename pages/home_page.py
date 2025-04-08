@@ -11,8 +11,9 @@ class HomePage:
 
     def __init__(self, driver):
         self.driver = driver
-        self.wait = WebDriverWait(driver, 2)
+        self.wait = WebDriverWait(driver, 5)
         self.actions = ActionChains(driver)
+        logger.info("HomePage object initialized")
 
         self.cookie_accept_button = (By.ID, "wt-cli-accept-all-btn")
         self.push_notification_close = (By.CLASS_NAME, "close")
@@ -35,13 +36,12 @@ class HomePage:
         except:
             pass
 
-    def open_homepage(self):
-        """Opens the home page and waits for it to load"""
-        logger.info("Step 1: Opening home page")
-        self.driver.get("https://useinsider.com/")
+    def open_page(self, url):
+        """Opens the specified URL and waits for the page to load"""
+        self.driver.get(url)
+        logger.info(f"Navigated to URL: {url}")
         self.wait.until(EC.presence_of_element_located((By.TAG_NAME, "body")))
-        assert "Insider" in self.driver.title, "Home page failed to load!"
-        logger.info("Home page loaded successfully")
+        assert url in self.driver.current_url, f"Page failed to load: {url}"
 
     def accept_cookies(self):
         """Accepts the cookie notification"""

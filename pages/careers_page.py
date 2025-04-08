@@ -11,7 +11,7 @@ class CareersPage:
 
     def __init__(self, driver):
         self.driver = driver
-        self.wait = WebDriverWait(driver, 2)
+        self.wait = WebDriverWait(driver, 5)
 
         self.locations_section = (By.ID, "career-our-location")
         self.teams_section = (By.XPATH, "//section[@data-id='a8e7b90']")

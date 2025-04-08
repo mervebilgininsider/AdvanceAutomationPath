@@ -32,7 +32,7 @@ def test_insider_careers(driver):
     # Step 1: Home Page Operations
     logger.info("Step 1: Home Page Operations")
     home_page = HomePage(driver)
-    home_page.open_homepage()
+    home_page.open_page("https://useinsider.com/")
     home_page.accept_cookies()
     home_page.navigate_to_careers()
 
@@ -45,7 +45,6 @@ def test_insider_careers(driver):
     logger.info("Step 3: QA Careers Page Operations")
     qa_careers_page = QACareersPage(driver)
     qa_careers_page.navigate_to_qa_careers()
-    qa_careers_page.go_to_open_positions()
     qa_careers_page.filter_jobs("Istanbul, Turkiye", "Quality Assurance")
     qa_careers_page.verify_job_listings("Quality Assurance")
     qa_careers_page.verify_view_role_buttons()

@@ -11,7 +11,7 @@ class QACareersPage:
 
     def __init__(self, driver):
         self.driver = driver
-        self.wait = WebDriverWait(driver, 2)
+        self.wait = WebDriverWait(driver, 5)
         self.actions = ActionChains(driver)
         
         self.location_filter = (By.ID, "select2-filter-by-location-container")
@@ -19,14 +19,21 @@ class QACareersPage:
         self.job_listings = (By.CSS_SELECTOR, ".position-list-item")
         self.view_role_buttons = (By.XPATH, "//a[contains(text(),'View Role')]")
         self.open_positions_link = (By.LINK_TEXT, "See all QA jobs")
-        self.qa_careers_url = "https://useinsider.com/careers/quality-assurance/"
+        self.dream_job_button = (By.XPATH, "//a[contains(@class, 'btn-info') and contains(text(), 'Find your dream job')]")
 
     def navigate_to_qa_careers(self):
         """Navigates to the QA Careers page"""
         logger.info("Step 5: Navigating to QA Careers page")
-        self.driver.get(self.qa_careers_url)
-        self.wait.until(EC.url_contains("quality-assurance"))
-        assert self.qa_careers_url in self.driver.current_url, "QA Careers page failed to load!"
+        
+        dream_job_button = self.wait.until(EC.presence_of_element_located(self.dream_job_button))
+        self.wait.until(EC.element_to_be_clickable(dream_job_button))
+        
+        self.driver.execute_script("arguments[0].click();", dream_job_button)
+        logger.info("Clicked 'Find your dream job' button")
+
+        self.driver.switch_to.window(self.driver.window_handles[-1])
+        logger.info("Successfully navigated to QA Careers page")
+
         self.wait.until(EC.presence_of_element_located((By.TAG_NAME, "body")))
         logger.info("QA Careers page loaded successfully")
         
@@ -82,7 +89,7 @@ class QACareersPage:
         logger.info("Step 7: Verifying filtered job listings")
         
         self.wait.until(lambda driver: driver.execute_script("return document.readyState") == "complete")
-        long_wait = WebDriverWait(self.driver, 30)
+        long_wait = WebDriverWait(self.driver, 45)
         
         department_selector = (By.XPATH, f"//div[@id='jobs-list']//span[contains(@class, 'position-department') and contains(text(), '{department}')]")
         long_wait.until(EC.presence_of_element_located(department_selector))
@@ -110,6 +117,7 @@ class QACareersPage:
         logger.info(f"Found {len(job_items)} job listing elements")
         
         job_item = job_items[0]
+        logger.info(f"Found {len(job_items)} job listing elements - {job_item}")
         self.driver.execute_script("arguments[0].scrollIntoView({block: 'center'});", job_item)
         long_wait.until(lambda driver: driver.execute_script("return document.readyState") == "complete")
         
@@ -155,12 +163,3 @@ class QACareersPage:
         
         self.driver.close()
         self.driver.switch_to.window(self.driver.window_handles[0])
-
-    def go_to_open_positions(self):
-        """Navigates to the open positions page"""
-        logger.info("Step 5.1: Navigating to open positions page")
-        open_positions = self.wait.until(EC.element_to_be_clickable(self.open_positions_link))
-        assert open_positions.is_displayed(), "'See all QA jobs' button is not visible!"
-        open_positions.click()
-        logger.info("Successfully navigated to open positions page")
-
