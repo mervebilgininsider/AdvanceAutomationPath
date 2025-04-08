@@ -1,36 +1,22 @@
 import pytest
-import os
 import logging
-from core.browser_factory import BrowserFactory
-from pages import qa_careers_page
+from helpers.driver_manager import DriverManager
+from helpers.test_helper import TestHelper
 from pages.home_page import HomePage
 from pages.careers_page import CareersPage
 from pages.qa_careers_page import QACareersPage
-from pytest_html.extras import image, html
-
 logger = logging.getLogger(__name__)
 
 @pytest.fixture(scope="function")
 def driver(request):
     """Creates and manages the WebDriver instance for each test"""
     browser = request.config.getoption("--browser", default="chrome")
-    logger.info(f"Initializing {browser} browser")
-    driver = BrowserFactory.get_driver(browser)
-    test_name = request.node.name
+    driver = DriverManager.get_driver(browser)
     
     yield driver
     
-    if request.node.rep_call.failed if hasattr(request.node, "rep_call") else False:
-        screenshot_path = BrowserFactory.capture_screenshot(driver, test_name)
-        logger.error(f"Test failed. Screenshot saved at: {screenshot_path}")
-        
-        if hasattr(request.node, "rep_call"):
-            request.node.rep_call.extra = [
-                image(screenshot_path),
-                html(f"<div>Screenshot: <a href='{screenshot_path}'>{test_name}.png</a></div>")
-            ]
-        
-    driver.quit()
+    TestHelper.handle_test_failure(request, driver)
+    DriverManager.quit_driver(driver, request.node.name)
 
 @pytest.hookimpl(tryfirst=True, hookwrapper=True)
 def pytest_runtest_makereport(item, call):
@@ -60,7 +46,7 @@ def test_insider_careers(driver):
     qa_careers_page = QACareersPage(driver)
     qa_careers_page.navigate_to_qa_careers()
     qa_careers_page.go_to_open_positions()
-    qa_careers_page.filter_jobs("Istanbul, Turkiye","Quality Assurance")
+    qa_careers_page.filter_jobs("Istanbul, Turkiye", "Quality Assurance")
     qa_careers_page.verify_job_listings("Quality Assurance")
     qa_careers_page.verify_view_role_buttons()
     
