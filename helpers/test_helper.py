@@ -51,4 +51,5 @@ class TestHelper:
         if request.node.rep_call.failed if hasattr(request.node, "rep_call") else False:
             screenshot_path = TestHelper.capture_screenshot(driver, request.node.name)
             TestHelper.add_screenshot_to_report(request, screenshot_path)
-            logger.error(f"Test execution failed. Screenshot captured and saved at: {screenshot_path}")
+            logger.error(f"Test execution failed. Screenshot captured and saved at: {screenshot_path}") 
+            
