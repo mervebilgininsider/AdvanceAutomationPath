@@ -35,16 +35,14 @@ class QACareersPage:
         self.wait.until(EC.presence_of_element_located((By.TAG_NAME, "body")))
         logger.info("QA Careers page loaded successfully")
         
-    def filter_jobs(self, location, department):
-        """Filters job listings by location and department
+    def select_location(self, location):
+        """Selects a specific location from the location filter dropdown
         
         :param str location: The location to filter jobs by (e.g., 'Istanbul, Turkiye')
-        :param str department: The department to filter jobs by (e.g., 'Quality Assurance')
         """
-        logger.info(f"Step 6: Filtering job listings - Location: {location}, Department: {department}")
+        logger.info(f"Step 6.1: Selecting location filter - {location}")
         wait = WebDriverWait(self.driver, 30)
         
-        logger.info("Step 6.1: Selecting location filter")
         location_dropdown = wait.until(EC.element_to_be_clickable(self.Location_Filter))
         self.driver.execute_script("arguments[0].scrollIntoView({block: 'center'});", location_dropdown)
         wait.until(lambda driver: driver.execute_script("return document.readyState") == "complete")
@@ -63,8 +61,15 @@ class QACareersPage:
         location_option = wait.until(EC.element_to_be_clickable((By.XPATH, location_xpath)))
         location_option.click()
         logger.info(f"Location filter selected: {location}")
+    
+    def select_department(self, department):
+        """Selects a specific department from the department filter dropdown
         
-        logger.info("Step 6.2: Selecting department filter")
+        :param str department: The department to filter jobs by (e.g., 'Quality Assurance')
+        """
+        logger.info(f"Step 6.2: Selecting department filter - {department}")
+        wait = WebDriverWait(self.driver, 30)
+        
         wait.until(lambda driver: driver.execute_script("return document.readyState") == "complete")
         
         department_dropdown = wait.until(EC.element_to_be_clickable(self.Department_Filter))
@@ -85,6 +90,17 @@ class QACareersPage:
         department_option = wait.until(EC.element_to_be_clickable((By.XPATH, department_xpath)))
         department_option.click()
         logger.info(f"Department filter selected: {department}")
+        
+    def filter_jobs(self, location, department):
+        """Filters job listings by location and department
+        
+        :param str location: The location to filter jobs by (e.g., 'Istanbul, Turkiye')
+        :param str department: The department to filter jobs by (e.g., 'Quality Assurance')
+        """
+        logger.info(f"Step 6: Filtering job listings - Location: {location}, Department: {department}")
+        
+        self.select_location(location)
+        self.select_department(department)
 
     def verify_job_listings(self, department):
         """Verifies the presence of filtered job listings
