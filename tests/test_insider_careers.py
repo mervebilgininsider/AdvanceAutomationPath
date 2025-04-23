@@ -9,7 +9,12 @@ logger = logging.getLogger(__name__)
 
 @pytest.fixture(scope="function")
 def driver(request):
-    """Creates and manages the WebDriver instance for each test"""
+    """Creates and manages the WebDriver instance for each test
+    
+    :param pytest.FixtureRequest request: The pytest request object containing test configuration
+    :return: A configured WebDriver instance
+    :rtype: WebDriver
+    """
     browser = request.config.getoption("--browser", default="chrome")
     driver = DriverManager.get_driver(browser)
     
@@ -20,7 +25,11 @@ def driver(request):
 
 @pytest.hookimpl(tryfirst=True, hookwrapper=True)
 def pytest_runtest_makereport(item, call):
-    """Captures test results for reporting"""
+    """Captures test results for reporting
+    
+    :param pytest.Item item: The test item being executed
+    :param pytest.CallInfo call: The call info for the current test phase
+    """
     outcome = yield
     rep = outcome.get_result()
     setattr(item, f"rep_{rep.when}", rep)

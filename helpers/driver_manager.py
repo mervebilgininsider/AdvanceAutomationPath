@@ -15,7 +15,12 @@ class DriverManager:
     
     @staticmethod
     def get_driver(browser="chrome"):
-        """Creates and returns a WebDriver instance based on the specified browser"""
+        """Creates and returns a WebDriver instance based on the specified browser
+        
+        :param str browser: The browser type to initialize ("chrome" or "firefox", default: "chrome")
+        :return: A configured WebDriver instance
+        :rtype: WebDriver
+        """
         logger.info(f"Initializing WebDriver instance for {browser} browser")
         
         if browser.lower() == "chrome":
@@ -49,7 +54,11 @@ class DriverManager:
 
     @staticmethod
     def quit_driver(driver, test_name=None):
-        """Safely quits the WebDriver instance after capturing screenshot if test failed"""
+        """Safely quits the WebDriver instance after capturing screenshot if test failed
+        
+        :param WebDriver driver: The WebDriver instance to quit
+        :param str test_name: Optional name of the test for screenshot filename (default: None)
+        """
         if driver:
             try:
                 # Capture screenshot if test failed
@@ -66,4 +75,4 @@ class DriverManager:
                 driver.quit()
                 logger.info("WebDriver instance terminated successfully")
             except Exception as e:
-                logger.error(f"Error occurred while quitting WebDriver: {str(e)}") 
+                logger.error(f"Error occurred while quitting WebDriver: {str(e)}")

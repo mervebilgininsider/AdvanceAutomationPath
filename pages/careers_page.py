@@ -43,7 +43,10 @@ class CareersPage:
         logger.info("Life at Insider section displayed successfully")
 
     def _scroll_to_element_and_wait(self, element):
-        """Scrolls to the specified element and waits for a fixed duration"""
+        """Scrolls to the specified element and waits for a fixed duration
+        
+        :param WebElement element: The web element to scroll to and make visible in the viewport
+        """
         self.driver.execute_script("arguments[0].scrollIntoView(true);", element)
         time.sleep(1)
 

@@ -36,7 +36,11 @@ class QACareersPage:
         logger.info("QA Careers page loaded successfully")
         
     def filter_jobs(self, location, department):
-        """Filters job listings by location and department"""
+        """Filters job listings by location and department
+        
+        :param str location: The location to filter jobs by (e.g., 'Istanbul, Turkiye')
+        :param str department: The department to filter jobs by (e.g., 'Quality Assurance')
+        """
         logger.info(f"Step 6: Filtering job listings - Location: {location}, Department: {department}")
         wait = WebDriverWait(self.driver, 30)
         
@@ -83,7 +87,10 @@ class QACareersPage:
         logger.info(f"Department filter selected: {department}")
 
     def verify_job_listings(self, department):
-        """Verifies the presence of filtered job listings"""
+        """Verifies the presence of filtered job listings
+        
+        :param str department: The department name to verify in job listings (e.g., 'Quality Assurance')
+        """
         logger.info("Step 7: Verifying filtered job listings")
         
         self.wait.until(lambda driver: driver.execute_script("return document.readyState") == "complete")

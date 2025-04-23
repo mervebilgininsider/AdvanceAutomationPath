@@ -18,7 +18,10 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 def pytest_addoption(parser):
-    """Adds command line option for browser selection"""
+    """Adds command line option for browser selection
+    
+    :param pytest.Parser parser: The pytest command line parser to add options to
+    """
     parser.addoption(
         "--browser", 
         action="store", 
@@ -34,7 +37,11 @@ def pytest_addoption(parser):
 
 @pytest.hookimpl(hookwrapper=True)
 def pytest_runtest_makereport(item, call):
-    """Configures HTML report generation"""
+    """Configures HTML report generation
+    
+    :param pytest.Item item: The test item being executed
+    :param pytest.CallInfo call: The call info for the current test phase
+    """
     outcome = yield
     report = outcome.get_result()
     report.extra = getattr(report, "extra", [])
@@ -46,7 +53,10 @@ def pytest_runtest_makereport(item, call):
 
 @pytest.hookimpl(tryfirst=True)
 def pytest_configure(config):
-    """Creates a unique report directory for each test run"""
+    """Creates a unique report directory for each test run
+    
+    :param pytest.Config config: The pytest configuration object
+    """
     timestamp = datetime.datetime.now().strftime('%Y%m%d-%H%M%S')
     
     session_dir = os.path.join('reports', f'test_run_{timestamp}')
