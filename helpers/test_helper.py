@@ -1,5 +1,6 @@
 import os
 import logging
+import pytest
 from datetime import datetime
 from pytest_html.extras import image, html
 
@@ -11,7 +12,7 @@ class TestHelper:
     @staticmethod
     def capture_screenshot(driver, test_name):
         """Captures a screenshot and saves it to the screenshots directory"""
-        screenshots_dir = "screenshots"
+        screenshots_dir = getattr(pytest, "screenshots_dir", "screenshots")
         if not os.path.exists(screenshots_dir):
             os.makedirs(screenshots_dir)
             

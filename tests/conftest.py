@@ -25,6 +25,12 @@ def pytest_addoption(parser):
         default="chrome", 
         help="Browser to run tests on: chrome or firefox"
     )
+    parser.addoption(
+        "--screenshots-dir",
+        action="store",
+        default=None,
+        help="Directory to store screenshots"
+    )
 
 @pytest.hookimpl(hookwrapper=True)
 def pytest_runtest_makereport(item, call):
@@ -48,4 +54,11 @@ def pytest_configure(config):
         os.makedirs(session_dir)
     
     config.option.htmlpath = os.path.join(session_dir, 'report.html')
-    pytest.screenshots_dir = session_dir
+    
+    # Set screenshots directory
+    screenshots_dir = config.getoption("--screenshots-dir") or os.environ.get("SCREENSHOT_DIR", "screenshots")
+    pytest.screenshots_dir = screenshots_dir
+    
+    # Ensure screenshots directory exists
+    if not os.path.exists(screenshots_dir):
+        os.makedirs(screenshots_dir)
