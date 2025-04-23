@@ -14,21 +14,19 @@ class QACareersPage:
         self.wait = WebDriverWait(driver, 5)
         self.actions = ActionChains(driver)
         
-        self.location_filter = (By.ID, "select2-filter-by-location-container")
-        self.department_filter = (By.ID, "select2-filter-by-department-container")
-        self.job_listings = (By.CSS_SELECTOR, ".position-list-item")
-        self.view_role_buttons = (By.XPATH, "//a[contains(text(),'View Role')]")
-        self.open_positions_link = (By.LINK_TEXT, "See all QA jobs")
-        self.dream_job_button = (By.XPATH, "//a[contains(@class, 'btn-info') and contains(text(), 'Find your dream job')]")
+        self.Location_Filter = (By.ID, "select2-filter-by-location-container")
+        self.Department_Filter = (By.ID, "select2-filter-by-department-container")
+        self.Job_Listings = (By.CSS_SELECTOR, ".position-list-item")
+        self.Dream_Job_Button = (By.XPATH, "//a[contains(@class, 'btn-info') and contains(text(), 'Find your dream job')]")
 
     def navigate_to_qa_careers(self):
         """Navigates to the QA Careers page"""
         logger.info("Step 5: Navigating to QA Careers page")
         
-        dream_job_button = self.wait.until(EC.presence_of_element_located(self.dream_job_button))
-        self.wait.until(EC.element_to_be_clickable(dream_job_button))
+        Dream_Job_Button = self.wait.until(EC.presence_of_element_located(self.Dream_Job_Button))
+        self.wait.until(EC.element_to_be_clickable(Dream_Job_Button))
         
-        self.driver.execute_script("arguments[0].click();", dream_job_button)
+        self.driver.execute_script("arguments[0].click();", Dream_Job_Button)
         logger.info("Clicked 'Find your dream job' button")
 
         self.driver.switch_to.window(self.driver.window_handles[-1])
@@ -43,7 +41,7 @@ class QACareersPage:
         wait = WebDriverWait(self.driver, 30)
         
         logger.info("Step 6.1: Selecting location filter")
-        location_dropdown = wait.until(EC.element_to_be_clickable(self.location_filter))
+        location_dropdown = wait.until(EC.element_to_be_clickable(self.Location_Filter))
         self.driver.execute_script("arguments[0].scrollIntoView({block: 'center'});", location_dropdown)
         wait.until(lambda driver: driver.execute_script("return document.readyState") == "complete")
         wait.until(lambda driver: len(driver.find_elements(By.XPATH, "//select[@id='filter-by-location']/option[not(@value='All')]")) > 0)
@@ -65,7 +63,7 @@ class QACareersPage:
         logger.info("Step 6.2: Selecting department filter")
         wait.until(lambda driver: driver.execute_script("return document.readyState") == "complete")
         
-        department_dropdown = wait.until(EC.element_to_be_clickable(self.department_filter))
+        department_dropdown = wait.until(EC.element_to_be_clickable(self.Department_Filter))
         self.driver.execute_script("arguments[0].scrollIntoView({block: 'center'});", department_dropdown)
         wait.until(lambda driver: driver.execute_script("return document.readyState") == "complete")
         wait.until(lambda driver: len(driver.find_elements(By.XPATH, "//select[@id='filter-by-department']/option[not(@value='All')]")) > 0)
@@ -95,7 +93,7 @@ class QACareersPage:
         long_wait.until(EC.presence_of_element_located(department_selector))
         logger.info(f"Selected department '{department}' displayed in job list")
         
-        job_items = self.wait.until(EC.presence_of_all_elements_located(self.job_listings))
+        job_items = self.wait.until(EC.presence_of_all_elements_located(self.Job_Listings))
         job_count = len(job_items)
         assert job_count > 0, "No job listings found matching the specified filters!"
         logger.info(f"Found {job_count} job listings matching the filters")
@@ -112,7 +110,7 @@ class QACareersPage:
         self.wait.until(lambda driver: driver.execute_script("return document.readyState") == "complete")
         long_wait = WebDriverWait(self.driver, 45)
         
-        job_items = long_wait.until(EC.presence_of_all_elements_located(self.job_listings))
+        job_items = long_wait.until(EC.presence_of_all_elements_located(self.Job_Listings))
         assert len(job_items) > 0, "Job listing elements not found!"
         logger.info(f"Found {len(job_items)} job listing elements")
         
