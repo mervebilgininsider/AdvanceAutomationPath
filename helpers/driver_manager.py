@@ -34,14 +34,11 @@ class DriverManager:
                 options.add_argument("--no-sandbox")
                 options.add_argument("--disable-dev-shm-usage")
                 
-                # Set ChromeDriver path for ARM64
-                driver_path = os.path.expanduser("~/.wdm/drivers/chromedriver/mac64/134.0.6998.165/chromedriver-mac-arm64/chromedriver")
-                if not os.path.exists(driver_path):
-                    driver_path = ChromeDriverManager().install()
-                
-                return webdriver.Chrome(service=ChromeService(driver_path), options=options)
+                # PATH'teki chromedriver kullanılacak
+                return webdriver.Chrome(options=options)
             
-            return webdriver.Chrome(service=ChromeService(ChromeDriverManager().install()), options=options)
+            # PATH'teki chromedriver kullanılacak
+            return webdriver.Chrome(options=options)
             
         elif browser.lower() == "firefox":
             options = webdriver.FirefoxOptions()

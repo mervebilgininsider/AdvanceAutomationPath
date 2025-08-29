@@ -13,7 +13,6 @@ class HomePage:
         self.driver = driver
         self.wait = WebDriverWait(driver, 5)
         self.actions = ActionChains(driver)
-        logger.info("HomePage object initialized")
 
         self.Cookie_Accept_Button = (By.ID, "wt-cli-accept-all-btn")
         self.Push_Notification_Close = (By.CLASS_NAME, "close")
@@ -28,11 +27,9 @@ class HomePage:
             short_wait = WebDriverWait(self.driver, 2)
             popup = short_wait.until(EC.presence_of_element_located(self.Agent_One_Popup))
             if popup.is_displayed():
-                logger.info("Step 1.1: Closing Agent One popup")
                 close_button = self.driver.find_element(*self.Agent_One_Close)
                 self.driver.execute_script("arguments[0].click();", close_button)
                 short_wait.until(EC.invisibility_of_element_located(self.Agent_One_Popup))
-                logger.info("Agent One popup closed successfully")
         except:
             pass
 
@@ -42,7 +39,6 @@ class HomePage:
         :param str url: The URL address to navigate to in the browser
         """
         self.driver.get(url)
-        logger.info(f"Navigated to URL: {url}")
         self.wait.until(EC.presence_of_element_located((By.TAG_NAME, "body")))
         assert url in self.driver.current_url, f"Page failed to load: {url}"
 
@@ -53,28 +49,24 @@ class HomePage:
             accept_button = self.wait.until(EC.element_to_be_clickable(self.Cookie_Accept_Button))
             accept_button.click()
             self.wait.until(EC.invisibility_of_element_located(self.Cookie_Accept_Button))
-            logger.info("Cookie notification accepted successfully")
         except Exception:
-            logger.info("Cookie notification not visible or already accepted")
+            pass
 
     def close_push_notification(self):
         """Closes the push notification if present"""
         try:
             push_close_button = self.wait.until(EC.element_to_be_clickable(self.Push_Notification_Close))
             push_close_button.click()
-            logger.info("Push notification closed successfully")
         except Exception:
             pass
 
     def navigate_to_careers(self):
         """Hovers over the 'Company' menu and clicks the 'Careers' option"""
-        logger.info("Step 3: Navigating to Careers page")
         self.close_push_notification()
         self.handle_agent_one_popup()
 
         company_menu = self.wait.until(EC.presence_of_element_located(self.Company_Menu))
         self.actions.move_to_element(company_menu).perform()
-        logger.info("Hovered over Company menu")
         
         self.handle_agent_one_popup()
 
@@ -83,7 +75,5 @@ class HomePage:
 
         careers_link = self.wait.until(EC.element_to_be_clickable(self.Careers_Link))
         careers_link.click()
-        logger.info("Clicked Careers link")
 
         self.driver.switch_to.window(self.driver.window_handles[-1])
-        logger.info("Successfully navigated to Careers page")

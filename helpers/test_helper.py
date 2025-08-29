@@ -11,34 +11,45 @@ class TestHelper:
     
     @staticmethod
     def capture_screenshot(driver, test_name):
-        """Captures a screenshot and saves it to the screenshots directory
-        
+        """
+        Captures a screenshot and saves it to the screenshots directory.
+
         :param WebDriver driver: The Selenium WebDriver instance used to capture the screenshot
         :param str test_name: The name of the test to use in the screenshot filename
         :return: The path to the saved screenshot
         :rtype: str
         """
+        import pytest
+        import logging
+        logger = logging.getLogger(__name__)
         screenshots_dir = getattr(pytest, "screenshots_dir", "screenshots")
         if not os.path.exists(screenshots_dir):
             os.makedirs(screenshots_dir)
-            
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
         screenshot_path = os.path.join(screenshots_dir, f"{test_name}_{timestamp}.png")
-        driver.save_screenshot(screenshot_path)
-        logger.info(f"Screenshot captured and saved to: {screenshot_path}")
+        try:
+            driver.save_screenshot(screenshot_path)
+            logger.info(f"Screenshot captured and saved to: {screenshot_path}")
+        except Exception as e:
+            logger.error(f"Screenshot could not be captured: {e}")
         return screenshot_path
 
     @staticmethod
     def add_screenshot_to_report(request, screenshot_path):
-        """Adds screenshot to HTML report
-        
+        """
+        Adds screenshot to HTML report.
+
         :param pytest.FixtureRequest request: The pytest request object to attach the screenshot to
         :param str screenshot_path: The file path of the screenshot to add to the report
         """
+        from pytest_html.extras import image, html
+        import os
         if hasattr(request.node, "rep_call"):
-            request.node.rep_call.extra = [
-                image(screenshot_path),
-                html(f"<div>Screenshot: <a href='{screenshot_path}'>{request.node.name}.png</a></div>")
+            # Rapor dosyasına göre göreli yol
+            rel_path = os.path.relpath(screenshot_path, start=os.path.dirname(request.config.option.htmlpath))
+            request.node.rep_call.extra = getattr(request.node.rep_call, "extra", []) + [
+                image(rel_path),
+                html(f"<div>Screenshot: <a href='{rel_path}'>{request.node.name}.png</a></div>")
             ]
 
     @staticmethod
