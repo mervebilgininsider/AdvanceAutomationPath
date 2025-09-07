@@ -3,6 +3,7 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.action_chains import ActionChains
 import logging
+import time
 
 logger = logging.getLogger(__name__)
 
@@ -18,7 +19,8 @@ class QACareersPage:
         self.Department_Filter = (By.ID, "select2-filter-by-department-container")
         self.Job_Listings = (By.CSS_SELECTOR, ".position-list-item")
         self.Dream_Job_Button = (By.XPATH, "//a[contains(@class, 'btn-info') and contains(text(), 'Find your dream job')]")
-
+        self.Career_Position_List = (By.ID, "career-position-list")
+        
     def navigate_to_qa_careers(self):
         """Navigates to the QA Careers page"""
         
@@ -35,6 +37,10 @@ class QACareersPage:
         :param str location: The location to filter jobs by (e.g., 'Istanbul, Turkiye')
         """
         wait = WebDriverWait(self.driver, 30)
+        
+        # Scroll to the career-position-list before interacting with the location filter
+        position_list = wait.until(EC.presence_of_element_located(self.Career_Position_List))
+        self.driver.execute_script("arguments[0].scrollIntoView({block: 'center'});", position_list)
         
         location_dropdown = wait.until(EC.element_to_be_clickable(self.Location_Filter))
         self.driver.execute_script("arguments[0].scrollIntoView({block: 'center'});", location_dropdown)
@@ -58,7 +64,8 @@ class QACareersPage:
         # Filtre sonrası sayfanın ve liste alanının güncellenmesini bekle
         wait.until(lambda driver: driver.execute_script("return document.readyState") == "complete")
         WebDriverWait(self.driver, 45).until(lambda d: len(d.find_elements(By.CSS_SELECTOR, ".position-list-item")) >= 0)
-    
+        time.sleep(1)
+        
     def select_department(self, department):
         """Selects a specific department from the department filter dropdown
         
@@ -87,6 +94,7 @@ class QACareersPage:
         # Filtre sonrası liste güncellenmesini bekle (spinner yok varsayımıyla liste eleman sayısı değişimine bakılabilir)
         wait.until(lambda driver: driver.execute_script("return document.readyState") == "complete")
         WebDriverWait(self.driver, 45).until(lambda d: len(d.find_elements(By.CSS_SELECTOR, ".position-list-item")) >= 0)
+        time.sleep(1)
         
     def filter_jobs(self, location, department):
         """Filters job listings by location and department

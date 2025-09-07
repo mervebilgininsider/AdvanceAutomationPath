@@ -33,4 +33,4 @@ class BaseTest:
         # Fail durumunda sadece logla
         if hasattr(request.node, "rep_call") and request.node.rep_call.failed:
             logger.error(f"Test execution failed. Screenshot captured and saved at: {screenshot_path}")
-        DriverManager.quit_driver(self.driver, request.node.name) 
+        DriverManager.quit_driver(self.driver) 

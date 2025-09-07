@@ -50,25 +50,13 @@ class DriverManager:
             raise ValueError(f"Unsupported browser type specified: {browser}")
 
     @staticmethod
-    def quit_driver(driver, test_name=None):
-        """Safely quits the WebDriver instance after capturing screenshot if test failed
+    def quit_driver(driver):
+        """Safely quits the WebDriver instance
         
         :param WebDriver driver: The WebDriver instance to quit
-        :param str test_name: Optional name of the test for screenshot filename (default: None)
         """
         if driver:
             try:
-                # Capture screenshot if test failed
-                if test_name:
-                    screenshots_dir = "screenshots"
-                    if not os.path.exists(screenshots_dir):
-                        os.makedirs(screenshots_dir)
-                    
-                    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-                    screenshot_path = os.path.join(screenshots_dir, f"{test_name}_{timestamp}.png")
-                    driver.save_screenshot(screenshot_path)
-                    logger.info(f"Screenshot captured and saved to: {screenshot_path}")
-                
                 driver.quit()
                 logger.info("WebDriver instance terminated successfully")
             except Exception as e:
