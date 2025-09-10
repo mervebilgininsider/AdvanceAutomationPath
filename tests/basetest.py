@@ -27,10 +27,10 @@ class BaseTest:
     def teardown_method(self, method):
         logger = logging.getLogger(__name__)
         request = self._request
-        # Her durumda ekran görüntüsü al ve rapora ekle
+        
         screenshot_path = TestHelper.capture_screenshot(self.driver, request.node.name)
         TestHelper.add_screenshot_to_report(request, screenshot_path)
-        # Fail durumunda sadece logla
+
         if hasattr(request.node, "rep_call") and request.node.rep_call.failed:
             logger.error(f"Test execution failed. Screenshot captured and saved at: {screenshot_path}")
         DriverManager.quit_driver(self.driver) 

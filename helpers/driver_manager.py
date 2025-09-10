@@ -28,16 +28,13 @@ class DriverManager:
             options.add_argument("--start-maximized")
             options.add_argument("--disable-notifications")
             
-            # Handle ARM64 architecture on macOS
             if platform.system() == "Darwin" and platform.machine() == "arm64":
                 options.binary_location = "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"
                 options.add_argument("--no-sandbox")
                 options.add_argument("--disable-dev-shm-usage")
                 
-                # PATH'teki chromedriver kullanılacak
                 return webdriver.Chrome(options=options)
-            
-            # PATH'teki chromedriver kullanılacak
+                
             return webdriver.Chrome(options=options)
             
         elif browser.lower() == "firefox":

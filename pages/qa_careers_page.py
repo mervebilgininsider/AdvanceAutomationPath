@@ -2,10 +2,8 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.action_chains import ActionChains
-import logging
 import time
 
-logger = logging.getLogger(__name__)
 
 class QACareersPage:
     """Page Object Model for Insider QA Careers Page"""
@@ -38,30 +36,26 @@ class QACareersPage:
         """
         wait = WebDriverWait(self.driver, 30)
         
-        # Scroll to the career-position-list before interacting with the location filter
         position_list = wait.until(EC.presence_of_element_located(self.Career_Position_List))
         self.driver.execute_script("arguments[0].scrollIntoView({block: 'center'});", position_list)
         
         location_dropdown = wait.until(EC.element_to_be_clickable(self.Location_Filter))
         self.driver.execute_script("arguments[0].scrollIntoView({block: 'center'});", location_dropdown)
-        # Sayfa yüklenmesini ve select2 seçeneklerinin gelmesini bekle
+
         wait.until(lambda driver: driver.execute_script("return document.readyState") == "complete")
         wait.until(lambda driver: len(driver.find_elements(By.XPATH, "//select[@id='filter-by-location']/option[not(@value='All')]") ) > 0)
         
         location_dropdown.click()
-        
-        # Select2 sonuç listesinin görünmesini bekle
+
         dropdown_options = wait.until(EC.presence_of_element_located((By.CLASS_NAME, "select2-results__options")))
         wait.until(EC.visibility_of(dropdown_options))
         assert dropdown_options.is_displayed(), "Location filter options not visible!"
         
-        # Case-insensitive eşleşme ile item'ı seç
         location_xpath = f"//li[contains(@id, 'select2-filter-by-location-result')][contains(translate(normalize-space(.), 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz'), translate('{location}', 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz'))]"
         wait.until(EC.visibility_of_element_located((By.XPATH, location_xpath)))
         location_option = wait.until(EC.element_to_be_clickable((By.XPATH, location_xpath)))
         location_option.click() 
         
-        # Filtre sonrası sayfanın ve liste alanının güncellenmesini bekle
         wait.until(lambda driver: driver.execute_script("return document.readyState") == "complete")
         WebDriverWait(self.driver, 45).until(lambda d: len(d.find_elements(By.CSS_SELECTOR, ".position-list-item")) >= 0)
         time.sleep(1)
@@ -85,13 +79,11 @@ class QACareersPage:
         wait.until(EC.visibility_of(dropdown_options))
         assert dropdown_options.is_displayed(), "Department filter options not visible!"
         
-        # Case-insensitive eşleşme
         department_xpath = f"//li[contains(@id, 'select2-filter-by-department-result')][contains(translate(normalize-space(.), 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz'), translate('{department}', 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz'))]"
         wait.until(EC.visibility_of_element_located((By.XPATH, department_xpath)))
         department_option = wait.until(EC.element_to_be_clickable((By.XPATH, department_xpath)))
         department_option.click()
         
-        # Filtre sonrası liste güncellenmesini bekle (spinner yok varsayımıyla liste eleman sayısı değişimine bakılabilir)
         wait.until(lambda driver: driver.execute_script("return document.readyState") == "complete")
         WebDriverWait(self.driver, 45).until(lambda d: len(d.find_elements(By.CSS_SELECTOR, ".position-list-item")) >= 0)
         time.sleep(1)
@@ -112,9 +104,8 @@ class QACareersPage:
         :param str department: The department name to verify in job listings (e.g., 'Quality Assurance')
         """
         
-        # Sayfa ve liste hazır olana kadar bekle
         self.wait.until(lambda driver: driver.execute_script("return document.readyState") == "complete")        
-        # Önce liste elemanlarının gelmesini bekle
+        
         def _job_items_present(d):
             items = d.find_elements(By.CSS_SELECTOR, ".position-list-item")
             return items if len(items) > 0 else False
@@ -122,23 +113,21 @@ class QACareersPage:
         job_count = len(job_items)
         assert job_count > 0, "No job listings found matching the specified filters!"
         
-        # Dropdown konteynerinde seçili departmanı doğrula (case-insensitive)
         selected_department_text = self.driver.find_element(*self.Department_Filter).text.strip().lower()
         assert department.lower() in selected_department_text, (
             f"Selected department not reflected in filter container. Expected contains: '{department}', "
             f"got: '{selected_department_text}'"
         )
         
-        # İlan kartlarındaki department alanlarında esnek doğrulama
         possible_department_keywords = {department.lower(), "quality", "qa"}
         found_match = False
         for i, job in enumerate(job_items[:5]):
             try:
                 self.wait.until(EC.visibility_of(job))
-                # Kart içindeki department alanı
+                
                 dept_spans = job.find_elements(By.CSS_SELECTOR, ".position-department, span[class*='department']")
                 texts = " ".join([s.text.lower() for s in dept_spans if s.text])
-                # Kartın tüm metnini de yedek olarak kontrol et
+                
                 full_text = (job.text or "").lower()
                 corpus = f"{texts} {full_text}"
                 if any(key in corpus for key in possible_department_keywords):
@@ -146,10 +135,6 @@ class QACareersPage:
                 assert job.is_displayed(), f"Job listing {i+1} is not visible!"
             except Exception:
                 pass
-        # Eğer kart metinlerinde departman görünmüyorsa, en azından ilanların geldiğini doğruladık
-        # ve seçili departman filtresinin UI'da yansıdığını kanıtladık. Bu durumda testi geçerli sayalım.
-        if not found_match:
-            logger.info("Department text not found in first job cards, but listings are present and filter shows the correct department.")
 
     def verify_view_role_buttons(self):
         """Verifies the presence and functionality of 'View Role' buttons"""

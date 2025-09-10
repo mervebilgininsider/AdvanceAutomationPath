@@ -48,7 +48,6 @@ def pytest_runtest_makereport(item, call):
     setattr(item, f"rep_{report.when}", report)
     
     if report.when == "call" and report.failed:
-        # Screenshot capture is handled in test_insider_careers.py
         pass
 
 @pytest.hookimpl(tryfirst=True)
@@ -60,10 +59,10 @@ def pytest_configure(config):
     if not os.path.exists(session_dir):
         os.makedirs(session_dir)
     config.option.htmlpath = os.path.join(session_dir, 'report.html')
-    # Set screenshots directory to report dir
+    
     screenshots_dir = os.path.join(session_dir, "screenshots")
     pytest.screenshots_dir = screenshots_dir
     pytest.report_dir = session_dir
-    # Ensure screenshots directory exists
+    
     if not os.path.exists(screenshots_dir):
         os.makedirs(screenshots_dir)

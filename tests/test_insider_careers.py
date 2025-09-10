@@ -1,20 +1,16 @@
 """
 Test case is:
 
-1. Home Page Operations
-   1.1. Accept cookies
-   1.2. Navigate to Careers page
+1. Accept cookies
+2. Navigate to Careers page
+3. Verify Locations section
+4. Verify Teams section
+5. Verify Life at Insider section
+6. Navigate to QA Careers page
+7. Filter jobs by location and department
+8. Verify filtered job listings
+9. Verify 'View Role' buttons
 
-2. Careers Page Verification
-   2.1. Verify Locations section
-   2.2. Verify Teams section
-   2.3. Verify Life at Insider section
-
-3. QA Careers Page Operations
-   3.1. Navigate to QA Careers page
-   3.2. Filter jobs by location and department
-   3.3. Verify filtered job listings
-   3.4. Verify 'View Role' buttons
 """
 import logging
 from tests.basetest import BaseTest
@@ -26,22 +22,42 @@ class TestInsiderCareers(BaseTest):
     def test_insider_careers(self):
         logger.info("Starting Insider Careers test workflow")
 
-        # Step 1: Home Page Operations (setup_method ile zaten açıldı ve kontrol edildi)
-        logger.info("Step 1: Home Page Operations")
+        logger.info("1. Accept cookies")  
         self.home_page.accept_cookies()
-        self.home_page.navigate_to_careers()
+        logger.info("Cookies accepted or not visible")  
 
-        # Step 2: Careers Page Verification
-        logger.info("Step 2: Careers Page Verification")
+        logger.info("2. Navigate to Careers page")   
+        self.home_page.navigate_to_careers()  
         careers_page = CareersPage(self.driver)
-        careers_page.verify_sections()
+        logger.info("Careers page navigated")  
 
-        # Step 3: QA Careers Page Operations
-        logger.info("Step 3: QA Careers Page Operations")
+        logger.info("3. Verify Locations section")    
+        careers_page.verify_locations_section()
+        logger.info("Locations section verified")  
+
+        logger.info("4. Verify Teams section") 
+        careers_page.verify_teams_section()
+        logger.info("Teams section verified")  
+         
+        logger.info("5. Verify Life at Insider section") 
+        careers_page.verify_life_at_insider_section()
+        logger.info("Life at Insider section verified")  
+
+        logger.info("6. Navigate to QA Careers page")
         qa_careers_page = QACareersPage(self.driver)
         qa_careers_page.navigate_to_qa_careers()
+        logger.info("QA Careers page navigated")  
+
+        logger.info("7. Filter jobs by location and department")
         qa_careers_page.filter_jobs("Istanbul, Turkiye", "Quality Assurance")
+        logger.info("Jobs filtered by location and department")    
+
+        logger.info("8. Verify filtered job listings")
         qa_careers_page.verify_job_listings("Quality Assurance")
+        logger.info("Filtered job listings verified")  
+
+        logger.info("9. Verify 'View Role' buttons")
         qa_careers_page.verify_view_role_buttons()
+        logger.info("'View Role' buttons verified")  
         
         logger.info("Insider Careers test workflow completed successfully")

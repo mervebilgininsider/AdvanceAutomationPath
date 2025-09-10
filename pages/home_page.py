@@ -2,9 +2,6 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.action_chains import ActionChains
-import logging
-
-logger = logging.getLogger(__name__)
 
 class HomePage:
     """Page Object Model for Insider Home Page"""
@@ -44,7 +41,6 @@ class HomePage:
 
     def accept_cookies(self):
         """Accepts the cookie notification"""
-        logger.info("Step 2: Accepting cookie notification")
         try:
             accept_button = self.wait.until(EC.element_to_be_clickable(self.Cookie_Accept_Button))
             accept_button.click()
