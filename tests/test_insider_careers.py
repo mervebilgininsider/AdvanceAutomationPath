@@ -1,3 +1,9 @@
+import logging
+from tests.basetest import BaseTest
+from pages.careers_page import CareersPage
+from pages.qa_careers_page import QACareersPage
+logger = logging.getLogger(__name__)
+
 """
 Test case is:
 
@@ -12,11 +18,6 @@ Test case is:
 9. Verify 'View Role' buttons
 
 """
-import logging
-from tests.basetest import BaseTest
-from pages.careers_page import CareersPage
-from pages.qa_careers_page import QACareersPage
-logger = logging.getLogger(__name__)
 
 class TestInsiderCareers(BaseTest):
     def test_insider_careers(self):
@@ -59,5 +60,5 @@ class TestInsiderCareers(BaseTest):
         logger.info("9. Verify 'View Role' buttons")
         qa_careers_page.verify_view_role_buttons()
         logger.info("'View Role' buttons verified")  
-        
+
         logger.info("Insider Careers test workflow completed successfully")

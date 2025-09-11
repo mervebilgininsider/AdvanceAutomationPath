@@ -45,7 +45,6 @@ class TestHelper:
         from pytest_html.extras import image, html
         import os
         if hasattr(request.node, "rep_call"):
-            # Rapor dosyasına göre göreli yol
             rel_path = os.path.relpath(screenshot_path, start=os.path.dirname(request.config.option.htmlpath))
             request.node.rep_call.extra = getattr(request.node.rep_call, "extra", []) + [
                 image(rel_path),
