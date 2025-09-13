@@ -33,7 +33,7 @@ pipeline {
                         which python3 || (echo "Missing python3" && exit 1)
                         
                         echo "Starting virtual display for Linux..."
-                        which Xvfb || (sudo apt-get update && sudo apt-get install -y xvfb)
+                        which Xvfb || (apt-get update && apt-get install -y xvfb)
                         Xvfb :99 -ac &
                         export DISPLAY=:99
                     fi
