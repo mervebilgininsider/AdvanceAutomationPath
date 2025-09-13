@@ -1,17 +1,18 @@
 version: '3.8'
 
 services:
-  mongodb:
-    image: mongo:7.0
-    container_name: test-metrics-mongodb
+  postgres:
+    image: postgres:15
+    container_name: test-metrics-postgres
     ports:
-      - "27017:27017"
+      - "5432:5432"
     environment:
-      MONGO_INITDB_ROOT_USERNAME: admin
-      MONGO_INITDB_ROOT_PASSWORD: password123
+      POSTGRES_DB: test_metrics
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: password123
     volumes:
-      - mongodb_data:/data/db
-      - ./mongodb-init.js:/docker-entrypoint-initdb.d/mongodb-init.js:ro
+      - postgres_data:/var/lib/postgresql/data
+      - ./postgres-init.sql:/docker-entrypoint-initdb.d/postgres-init.sql:ro
     networks:
       - test-network
 
@@ -22,7 +23,6 @@ services:
       - "3000:3000"
     environment:
       GF_SECURITY_ADMIN_PASSWORD: admin123
-      GF_INSTALL_PLUGINS: grafana-mongodb-datasource
     volumes:
       - grafana_data:/var/lib/grafana
       - ./grafana/provisioning:/etc/grafana/provisioning
@@ -30,10 +30,10 @@ services:
     networks:
       - test-network
     depends_on:
-      - mongodb
+      - postgres
 
 volumes:
-  mongodb_data:
+  postgres_data:
   grafana_data:
 
 networks:

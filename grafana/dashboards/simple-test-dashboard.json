@@ -1,0 +1,108 @@
+{
+  "dashboard": {
+    "id": null,
+    "title": "UI Test Metrics - Simple",
+    "tags": ["testing", "selenium"],
+    "timezone": "browser",
+    "panels": [
+      {
+        "id": 1,
+        "title": "Total Tests",
+        "type": "stat",
+        "targets": [
+          {
+            "expr": "db.test_results.countDocuments()",
+            "refId": "A"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "thresholds"
+            },
+            "thresholds": {
+              "steps": [
+                {
+                  "color": "green",
+                  "value": null
+                }
+              ]
+            }
+          }
+        },
+        "gridPos": {"h": 8, "w": 6, "x": 0, "y": 0}
+      },
+      {
+        "id": 2,
+        "title": "Passed Tests",
+        "type": "stat",
+        "targets": [
+          {
+            "expr": "db.test_results.countDocuments({status: 'passed'})",
+            "refId": "A"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "thresholds"
+            },
+            "thresholds": {
+              "steps": [
+                {
+                  "color": "green",
+                  "value": null
+                }
+              ]
+            }
+          }
+        },
+        "gridPos": {"h": 8, "w": 6, "x": 6, "y": 0}
+      },
+      {
+        "id": 3,
+        "title": "Failed Tests",
+        "type": "stat",
+        "targets": [
+          {
+            "expr": "db.test_results.countDocuments({status: 'failed'})",
+            "refId": "A"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "thresholds"
+            },
+            "thresholds": {
+              "steps": [
+                {
+                  "color": "red",
+                  "value": null
+                }
+              ]
+            }
+          }
+        },
+        "gridPos": {"h": 8, "w": 6, "x": 12, "y": 0}
+      },
+      {
+        "id": 4,
+        "title": "Test Results Timeline",
+        "type": "timeseries",
+        "targets": [
+          {
+            "expr": "db.test_results.find({}, {timestamp: 1, status: 1}).sort({timestamp: 1})",
+            "refId": "A"
+          }
+        ],
+        "gridPos": {"h": 8, "w": 18, "x": 0, "y": 8}
+      }
+    ],
+    "time": {
+      "from": "now-7d",
+      "to": "now"
+    },
+    "refresh": "30s"
+  }
+}

@@ -15,7 +15,11 @@ pipeline {
         PYTHONPATH = "${WORKSPACE}"
         PATH = "/opt/homebrew/bin:/usr/local/bin:$PATH"
         SCREENSHOT_DIR = "${WORKSPACE}/screenshots"
-        MONGO_URL = "mongodb://admin:password123@localhost:27017/test_metrics?authSource=admin"
+        POSTGRES_HOST = "localhost"
+        POSTGRES_PORT = "5432"
+        POSTGRES_DB = "test_metrics"
+        POSTGRES_USER = "admin"
+        POSTGRES_PASSWORD = "password123"
     }
     
     stages {
@@ -36,7 +40,7 @@ pipeline {
                     
                     pip install -r requirements.txt
                     
-                    pip install pytest pytest-html pytest-selenium pymongo pytest-json-report
+                    pip install pytest pytest-html pytest-selenium psycopg2-binary pytest-json-report
                     
                     mkdir -p screenshots
                     mkdir -p reports
@@ -79,16 +83,16 @@ pipeline {
             }
         }
         
-        stage('Log Test Results to MongoDB') {
+        stage('Log Test Results to PostgreSQL') {
             steps {
-                echo 'Logging test results to MongoDB...'
+                echo 'Logging test results to PostgreSQL...'
                 sh '''
                     . venv/bin/activate
                     
                     python -c "
 import json
 import os
-from helpers.metrics_logger import metrics_logger
+from helpers.postgres_logger import postgres_logger
 from datetime import datetime
 
 try:
@@ -101,7 +105,7 @@ try:
         duration = test.get('call', {}).get('duration', 0)
         error_message = test.get('call', {}).get('longrepr', '') if status == 'failed' else None
         
-        metrics_logger.log_test_result(
+        postgres_logger.log_test_result(
             test_name=test_name,
             status=status,
             duration=duration,
@@ -116,11 +120,11 @@ try:
         'timestamp': datetime.utcnow().isoformat()
     }
     
-    metrics_logger.log_test_metrics(summary)
-    print('Test results saved to MongoDB successfully')
+    postgres_logger.log_test_metrics(summary)
+    print('Test results saved to PostgreSQL successfully')
     
 except Exception as e:
-    print(f'MongoDB save error: {e}')
+    print(f'PostgreSQL save error: {e}')
     exit(1)
 "
                 '''
