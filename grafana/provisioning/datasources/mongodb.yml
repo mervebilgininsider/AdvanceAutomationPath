@@ -1,0 +1,10 @@
+apiVersion: 1
+
+datasources:
+  - name: MongoDB
+    type: mongodb
+    access: proxy
+    url: mongodb://admin:password123@mongodb:27017/test_metrics?authSource=admin
+    database: test_metrics
+    isDefault: true
+    editable: true

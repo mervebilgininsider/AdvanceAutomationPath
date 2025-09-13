@@ -1,0 +1,64 @@
+{
+  "dashboard": {
+    "id": null,
+    "title": "UI Test Metrics",
+    "tags": ["testing", "selenium", "ui"],
+    "style": "dark",
+    "timezone": "browser",
+    "panels": [
+      {
+        "id": 1,
+        "title": "Test Pass Rate",
+        "type": "stat",
+        "targets": [
+          {
+            "expr": "db.test_results.aggregate([{$match: {timestamp: {$gte: \"$__from\", $lte: \"$__to\"}}}, {$group: {_id: \"$status\", count: {$sum: 1}}}, {$group: {_id: null, total: {$sum: \"$count\"}, passed: {$sum: {$cond: [{$eq: [\"$_id\", \"passed\"]}, \"$count\", 0]}}}}, {$project: {passRate: {$multiply: [{$divide: [\"$passed\", \"$total\"]}, 100]}}}])",
+            "refId": "A"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "unit": "percent",
+            "min": 0,
+            "max": 100
+          }
+        },
+        "gridPos": {"h": 8, "w": 6, "x": 0, "y": 0}
+      },
+      {
+        "id": 2,
+        "title": "Test Execution Time",
+        "type": "timeseries",
+        "targets": [
+          {
+            "expr": "db.test_results.find({timestamp: {$gte: \"$__from\", $lte: \"$__to\"}}).sort({timestamp: 1})",
+            "refId": "A"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "unit": "s"
+          }
+        },
+        "gridPos": {"h": 8, "w": 12, "x": 6, "y": 0}
+      },
+      {
+        "id": 3,
+        "title": "Test Results Timeline",
+        "type": "timeseries",
+        "targets": [
+          {
+            "expr": "db.test_results.aggregate([{$match: {timestamp: {$gte: \"$__from\", $lte: \"$__to\"}}}, {$group: {_id: {status: \"$status\", hour: {$dateToString: {format: \"%Y-%m-%d %H:00\", date: \"$timestamp\"}}}, count: {$sum: 1}}}, {$sort: {_id: 1}}])",
+            "refId": "A"
+          }
+        ],
+        "gridPos": {"h": 8, "w": 18, "x": 0, "y": 8}
+      }
+    ],
+    "time": {
+      "from": "now-7d",
+      "to": "now"
+    },
+    "refresh": "30s"
+  }
+}
