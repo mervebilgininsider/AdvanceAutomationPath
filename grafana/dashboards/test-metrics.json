@@ -1,64 +1,106 @@
 {
-  "dashboard": {
-    "id": null,
-    "title": "UI Test Metrics",
-    "tags": ["testing", "selenium", "ui"],
-    "style": "dark",
-    "timezone": "browser",
-    "panels": [
-      {
-        "id": 1,
-        "title": "Test Pass Rate",
-        "type": "stat",
-        "targets": [
-          {
-            "expr": "db.test_results.aggregate([{$match: {timestamp: {$gte: \"$__from\", $lte: \"$__to\"}}}, {$group: {_id: \"$status\", count: {$sum: 1}}}, {$group: {_id: null, total: {$sum: \"$count\"}, passed: {$sum: {$cond: [{$eq: [\"$_id\", \"passed\"]}, \"$count\", 0]}}}}, {$project: {passRate: {$multiply: [{$divide: [\"$passed\", \"$total\"]}, 100]}}}])",
-            "refId": "A"
+  "id": null,
+  "title": "UI Test Metrics",
+  "tags": ["testing", "selenium"],
+  "timezone": "browser",
+  "panels": [
+    {
+      "id": 1,
+      "title": "Total Tests",
+      "type": "stat",
+      "targets": [
+        {
+          "rawSql": "SELECT COUNT(*) as value FROM test_results",
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "thresholds": {
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
           }
-        ],
-        "fieldConfig": {
-          "defaults": {
-            "unit": "percent",
-            "min": 0,
-            "max": 100
-          }
-        },
-        "gridPos": {"h": 8, "w": 6, "x": 0, "y": 0}
+        }
       },
-      {
-        "id": 2,
-        "title": "Test Execution Time",
-        "type": "timeseries",
-        "targets": [
-          {
-            "expr": "db.test_results.find({timestamp: {$gte: \"$__from\", $lte: \"$__to\"}}).sort({timestamp: 1})",
-            "refId": "A"
-          }
-        ],
-        "fieldConfig": {
-          "defaults": {
-            "unit": "s"
-          }
-        },
-        "gridPos": {"h": 8, "w": 12, "x": 6, "y": 0}
-      },
-      {
-        "id": 3,
-        "title": "Test Results Timeline",
-        "type": "timeseries",
-        "targets": [
-          {
-            "expr": "db.test_results.aggregate([{$match: {timestamp: {$gte: \"$__from\", $lte: \"$__to\"}}}, {$group: {_id: {status: \"$status\", hour: {$dateToString: {format: \"%Y-%m-%d %H:00\", date: \"$timestamp\"}}}, count: {$sum: 1}}}, {$sort: {_id: 1}}])",
-            "refId": "A"
-          }
-        ],
-        "gridPos": {"h": 8, "w": 18, "x": 0, "y": 8}
-      }
-    ],
-    "time": {
-      "from": "now-7d",
-      "to": "now"
+      "gridPos": {"h": 8, "w": 6, "x": 0, "y": 0}
     },
-    "refresh": "30s"
-  }
+    {
+      "id": 2,
+      "title": "Passed Tests",
+      "type": "stat",
+      "targets": [
+        {
+          "rawSql": "SELECT COUNT(*) as value FROM test_results WHERE status = 'passed'",
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "thresholds": {
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          }
+        }
+      },
+      "gridPos": {"h": 8, "w": 6, "x": 6, "y": 0}
+    },
+    {
+      "id": 3,
+      "title": "Failed Tests",
+      "type": "stat",
+      "targets": [
+        {
+          "rawSql": "SELECT COUNT(*) as value FROM test_results WHERE status = 'failed'",
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "thresholds": {
+            "steps": [
+              {
+                "color": "red",
+                "value": null
+              }
+            ]
+          }
+        }
+      },
+      "gridPos": {"h": 8, "w": 6, "x": 12, "y": 0}
+    },
+    {
+      "id": 4,
+      "title": "Test Results Table",
+      "type": "table",
+      "targets": [
+        {
+          "rawSql": "SELECT test_name, status, duration, timestamp FROM test_results ORDER BY timestamp DESC LIMIT 10",
+          "refId": "A"
+        }
+      ],
+      "gridPos": {"h": 8, "w": 18, "x": 0, "y": 8}
+    }
+  ],
+  "time": {
+    "from": "now-7d",
+    "to": "now"
+  },
+  "refresh": "30s"
 }
