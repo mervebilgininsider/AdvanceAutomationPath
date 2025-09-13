@@ -40,7 +40,7 @@ pipeline {
                     
                     pip install -r requirements.txt
                     
-                    pip install pytest pytest-html pytest-selenium psycopg2-binary pytest-json-report
+                    pip install pytest pytest-html pytest-selenium psycopg2-binary==2.9.10 pytest-json-report
                     
                     mkdir -p screenshots
                     mkdir -p reports
