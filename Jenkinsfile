@@ -98,7 +98,7 @@ try:
     for test in test_data.get('tests', []):
         test_name = test.get('nodeid', 'unknown')
         status = 'passed' if test.get('outcome') == 'passed' else 'failed'
-        duration = test.get('duration', 0)
+        duration = test.get('call', {}).get('duration', 0)
         error_message = test.get('call', {}).get('longrepr', '') if status == 'failed' else None
         
         metrics_logger.log_test_result(
@@ -117,10 +117,10 @@ try:
     }
     
     metrics_logger.log_test_metrics(summary)
-    print('Test sonuçları MongoDB\'ye kaydedildi')
+    print('Test results saved to MongoDB successfully')
     
 except Exception as e:
-    print(f'MongoDB kaydetme hatası: {e}')
+    print(f'MongoDB save error: {e}')
     exit(1)
 "
                 '''
