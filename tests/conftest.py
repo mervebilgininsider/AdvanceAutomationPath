@@ -44,7 +44,7 @@ def pytest_addoption(parser):
 
 
 @pytest.hookimpl(hookwrapper=True)
-def pytest_runtest_makereport(item, _):
+def pytest_runtest_makereport(item, call):
     """Configures HTML report generation
 
     :param pytest.Item item: The test item being executed

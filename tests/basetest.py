@@ -19,7 +19,7 @@ class BaseTest:
         """Injects pytest request fixture into the test instance."""
         self._request = request
 
-    def setup_method(self, _):
+    def setup_method(self, method):
         """Sets up the test environment."""
         self.driver = DriverManager.get_driver()
         self.home_page = HomePage(self.driver)
@@ -29,7 +29,7 @@ class BaseTest:
             print(traceback.format_exc())
             pytest.skip(f"Ana sayfa yüklenemedi, test başlatılamıyor: {e}")
 
-    def teardown_method(self, _):
+    def teardown_method(self, method):
         """Tears down the test environment."""
         request = self._request
 
