@@ -1,3 +1,4 @@
+from pages.base_page import BasePage
 """Page Object Model for Insider Home page."""
 
 from selenium.webdriver.common.by import By
@@ -6,13 +7,11 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.action_chains import ActionChains
 
 
-class HomePage:
+class HomePage(BasePage):
     """Page Object Model for Insider Home Page"""
 
     def __init__(self, driver):
-        self.driver = driver
-        self.wait = WebDriverWait(driver, 5)
-        self.actions = ActionChains(driver)
+        super().__init__(driver)
 
         self.cookie_accept_button = (By.ID, "wt-cli-accept-all-btn")
         self.push_notification_close = (By.CLASS_NAME, "close")

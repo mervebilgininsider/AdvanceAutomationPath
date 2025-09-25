@@ -1,3 +1,4 @@
+from pages.base_page import BasePage
 """Page Object Model for Insider Careers page."""
 
 import time
@@ -6,12 +7,11 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 
 
-class CareersPage:
+class CareersPage(BasePage):
     """Page Object Model for Insider Careers Page"""
 
     def __init__(self, driver):
-        self.driver = driver
-        self.wait = WebDriverWait(driver, 5)
+        super().__init__(driver)
 
         self.locations_section = (By.ID, "career-our-location")
         self.teams_section = (By.XPATH, "//section[@data-id='a8e7b90']")

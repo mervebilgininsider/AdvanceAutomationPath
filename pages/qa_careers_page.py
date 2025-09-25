@@ -1,3 +1,4 @@
+from pages.base_page import BasePage
 """Page Object Model for Insider QA Careers page."""
 
 import time
@@ -7,13 +8,11 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.action_chains import ActionChains
 
 
-class QACareersPage:
+class QACareersPage(BasePage):
     """Page Object Model for Insider QA Careers Page"""
 
     def __init__(self, driver):
-        self.driver = driver
-        self.wait = WebDriverWait(driver, 5)
-        self.actions = ActionChains(driver)
+        super().__init__(driver)
 
         self.location_filter = (By.ID, "select2-filter-by-location-container")
         self.department_filter = (
