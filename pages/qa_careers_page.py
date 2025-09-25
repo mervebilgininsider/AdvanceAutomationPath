@@ -133,7 +133,7 @@ class QACareersPage:
         department_xpath = (
             f"//li[contains(@id, 'select2-filter-by-department-result')]"
             f"[contains(translate(normalize-space(.), "
-            f"'ABCDEFGHIJKsLMNOPQRSTUVWXYZ', "
+            f"'ABCDEFGHIJKLMNOPQRSTUVWXYZ', "
             f"'abcdefghijklmnopqrstuvwxyz'), "
             f"translate('{department}', "
             f"'ABCDEFGHIJKLMNOPQRSTUVWXYZ', "
