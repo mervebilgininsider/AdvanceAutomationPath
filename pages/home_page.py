@@ -1,7 +1,10 @@
+"""Page Object Model for Insider Home page."""
+
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.action_chains import ActionChains
+
 
 class HomePage:
     """Page Object Model for Insider Home Page"""
@@ -11,23 +14,32 @@ class HomePage:
         self.wait = WebDriverWait(driver, 5)
         self.actions = ActionChains(driver)
 
-        self.Cookie_Accept_Button = (By.ID, "wt-cli-accept-all-btn")
-        self.Push_Notification_Close = (By.CLASS_NAME, "close")
-        self.Company_Menu = (By.XPATH, "//li[contains(@class, 'nav-item dropdown')][6]")
-        self.Careers_Link = (By.XPATH, "//a[@href='https://useinsider.com/careers/']")
-        self.Agent_One_Popup = (By.CSS_SELECTOR, "div.ins-notification-content")
-        self.Agent_One_Close = (By.CSS_SELECTOR, "span.ins-close-button")
+        self.cookie_accept_button = (By.ID, "wt-cli-accept-all-btn")
+        self.push_notification_close = (By.CLASS_NAME, "close")
+        self.company_menu = (
+            By.XPATH, "//li[contains(@class, 'nav-item dropdown')][6]")
+        self.careers_link = (
+            By.XPATH, "//a[@href='https://useinsider.com/careers/']")
+        self.agent_one_popup = (
+            By.CSS_SELECTOR,
+            "div.ins-notification-content")
+        self.agent_one_close = (By.CSS_SELECTOR, "span.ins-close-button")
 
     def handle_agent_one_popup(self):
         """Handles and closes the Agent One popup if present"""
         try:
             short_wait = WebDriverWait(self.driver, 2)
-            popup = short_wait.until(EC.presence_of_element_located(self.Agent_One_Popup))
+            popup = short_wait.until(
+                EC.presence_of_element_located(
+                    self.agent_one_popup))
             if popup.is_displayed():
-                close_button = self.driver.find_element(*self.Agent_One_Close)
-                self.driver.execute_script("arguments[0].click();", close_button)
-                short_wait.until(EC.invisibility_of_element_located(self.Agent_One_Popup))
-        except:
+                close_button = self.driver.find_element(*self.agent_one_close)
+                self.driver.execute_script(
+                    "arguments[0].click();", close_button)
+                short_wait.until(
+                    EC.invisibility_of_element_located(
+                        self.agent_one_popup))
+        except BaseException:
             pass
 
     def open_page(self, url):
@@ -42,16 +54,22 @@ class HomePage:
     def accept_cookies(self):
         """Accepts the cookie notification"""
         try:
-            accept_button = self.wait.until(EC.element_to_be_clickable(self.Cookie_Accept_Button))
+            accept_button = self.wait.until(
+                EC.element_to_be_clickable(
+                    self.cookie_accept_button))
             accept_button.click()
-            self.wait.until(EC.invisibility_of_element_located(self.Cookie_Accept_Button))
+            self.wait.until(
+                EC.invisibility_of_element_located(
+                    self.cookie_accept_button))
         except Exception:
             pass
 
     def close_push_notification(self):
         """Closes the push notification if present"""
         try:
-            push_close_button = self.wait.until(EC.element_to_be_clickable(self.Push_Notification_Close))
+            push_close_button = self.wait.until(
+                EC.element_to_be_clickable(
+                    self.push_notification_close))
             push_close_button.click()
         except Exception:
             pass
@@ -61,15 +79,20 @@ class HomePage:
         self.close_push_notification()
         self.handle_agent_one_popup()
 
-        company_menu = self.wait.until(EC.presence_of_element_located(self.Company_Menu))
+        company_menu = self.wait.until(
+            EC.presence_of_element_located(
+                self.company_menu))
         self.actions.move_to_element(company_menu).perform()
-        
+
         self.handle_agent_one_popup()
 
-        self.wait.until(EC.visibility_of_element_located(self.Careers_Link))
-        assert self.driver.find_element(*self.Careers_Link).is_displayed(), "Careers link is not visible!"
+        self.wait.until(EC.visibility_of_element_located(self.careers_link))
+        assert self.driver.find_element(
+            *self.careers_link).is_displayed(), "Careers link is not visible!"
 
-        careers_link = self.wait.until(EC.element_to_be_clickable(self.Careers_Link))
+        careers_link = self.wait.until(
+            EC.element_to_be_clickable(
+                self.careers_link))
         careers_link.click()
 
         self.driver.switch_to.window(self.driver.window_handles[-1])
