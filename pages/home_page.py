@@ -1,10 +1,8 @@
-from pages.base_page import BasePage
 """Page Object Model for Insider Home page."""
 
 from selenium.webdriver.common.by import By
-from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
-from selenium.webdriver.common.action_chains import ActionChains
+from pages.base_page import BasePage
 
 
 class HomePage(BasePage):
@@ -27,15 +25,14 @@ class HomePage(BasePage):
     def handle_agent_one_popup(self):
         """Handles and closes the Agent One popup if present"""
         try:
-            short_wait = WebDriverWait(self.driver, 2)
-            popup = short_wait.until(
+            popup = self.wait_short.until(
                 EC.presence_of_element_located(
                     self.agent_one_popup))
             if popup.is_displayed():
                 close_button = self.driver.find_element(*self.agent_one_close)
                 self.driver.execute_script(
                     "arguments[0].click();", close_button)
-                short_wait.until(
+                self.wait_short.until(
                     EC.invisibility_of_element_located(
                         self.agent_one_popup))
         except BaseException:
@@ -73,18 +70,15 @@ class HomePage(BasePage):
         except Exception:
             pass
 
-    def navigate_to_careers(self):
-        """Hovers over the 'Company' menu and clicks the 'Careers' option"""
-        self.close_push_notification()
-        self.handle_agent_one_popup()
-
+    def hover_company_menu(self):
+        """Hovers over the Company menu"""
         company_menu = self.wait.until(
             EC.presence_of_element_located(
                 self.company_menu))
         self.actions.move_to_element(company_menu).perform()
 
-        self.handle_agent_one_popup()
-
+    def click_careers_link(self):
+        """Clicks on the Careers link"""
         self.wait.until(EC.visibility_of_element_located(self.careers_link))
         assert self.driver.find_element(
             *self.careers_link).is_displayed(), "Careers link is not visible!"
@@ -94,4 +88,6 @@ class HomePage(BasePage):
                 self.careers_link))
         careers_link.click()
 
+    def switch_to_new_window(self):
+        """Switches to the newly opened window"""
         self.driver.switch_to.window(self.driver.window_handles[-1])
