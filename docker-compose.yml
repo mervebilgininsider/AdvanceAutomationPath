@@ -1,0 +1,41 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:15
+    container_name: test-metrics-postgres
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_DB: test_metrics
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: password123
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./postgres-init.sql:/docker-entrypoint-initdb.d/postgres-init.sql:ro
+    networks:
+      - test-network
+
+  grafana:
+    image: grafana/grafana:10.2.0
+    container_name: test-metrics-grafana
+    ports:
+      - "3000:3000"
+    environment:
+      GF_SECURITY_ADMIN_PASSWORD: admin123
+    volumes:
+      - grafana_data:/var/lib/grafana
+      - ./grafana/provisioning:/etc/grafana/provisioning
+      - ./grafana/dashboards:/var/lib/grafana/dashboards
+    networks:
+      - test-network
+    depends_on:
+      - postgres
+
+volumes:
+  postgres_data:
+  grafana_data:
+
+networks:
+  test-network:
+    driver: bridge
